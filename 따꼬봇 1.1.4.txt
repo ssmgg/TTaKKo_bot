@@ -1,0 +1,592 @@
+const scriptName = "1.1.4";
+/**
+ * 따꼬봇 Controller
+ * @param msg
+ * @return replier.reply(msg)
+ * @version 1.1.4
+ */
+ var startBot = true;
+function response(room, msg, sender, isGroupChat, replier, imageDB, packageName) {
+  
+   if(msg == '/공지')   replier.reply(fnNotice("A"));   
+   else if(msg == '/긴급공지')   replier.reply(fnNotice("B")); 
+   else if(msg == '/따꼬봇')   replier.reply(rainbowBot());
+   else if(msg.indexOf("/") == 0 && 
+      (msg.indexOf("/입력") != -1 
+         || msg.indexOf("/킬") != -1
+         || msg.indexOf("/전체삭제") != -1
+         || msg.indexOf("/삭제") != -1
+         || msg.indexOf("/보스") != -1))   replier.reply(mvpBossFn(msg));
+   else if(msg.indexOf("/") == 0 && msg.indexOf("/반복") != -1)   replier.reply(scheduleStart(msg));      
+   else if(msg.indexOf("/") == 0 && msg.indexOf("/신청") != -1)   replier.reply(guildPvpFn(msg, sender));
+   else if(msg.indexOf("/") == 0 && msg.indexOf("/길매상대") != -1) {
+      guild = guildPvpmatch(msg);
+      pvpguild = guild.pvpguild;
+      text = guild.text;
+      replier.reply(text);}
+  else if(msg.indexOf("/패치노트") != -1) replier.reply(patchNote());
+   else if(msg.indexOf("/") == 0){
+      var chk = chkFnTm(sender);
+      if(chk != ""){
+         replier.reply(chk);  
+      }else{
+         replier.reply(guildMsg(msg));
+      }
+   }
+
+    
+   if(startBot){   
+      setInterval(function() {
+         if(mvpBoss.length >= 1){
+            var siren = setMvpNotice();
+            if(siren != "") replier.reply(siren);
+         }
+         
+         var siren1 = setCalendarNotice1();
+         if(siren1 != "") replier.reply(siren1);   
+
+         var siren2 = setCalendarNotice2();
+         if(siren2 != "") replier.reply(siren2);      
+      }, 60000);
+      startBot = false;
+   }
+}
+
+/**
+ * === 공지사항 ========================================
+ * 명령어 : /공지
+ * 명령어 : /긴급공지
+ */
+function fnNotice(type) {
+   if(type == "A"){      
+      var msg = "🌈2021년 Rainbow공지🌈\n";
+         msg += "‘공지’방 채팅 되도록 자제해주세요!\n\n";
+         
+         msg += "*기본적인 예의로 상대방을 배려해주세요 ☺️\n\n";
+         msg += "- 월창 분쟁 삼가기\n";
+         msg += "- 길드내 욕설, 공격적 언행 삼가기\n";   
+         msg += "- 타 직업 비교 및 언급 배려하기\n";
+         msg += "- 지나친 종교, 정치적 언쟁 삼가기\n\n\n";
+         
+         msg += "1)🌈공성전\n";
+         msg += "*매주 일요일 오후 5시까지\n";         
+         msg += "투표 및 1:1 로 참여의사\n\n";
+         msg += "*일요일20:30 분까지 접속하셔야 정해진 파티구성가능하오니, 참여를 표하신분은 늦지않게 접속해주세요.\n";
+         msg += "(늦으시면 다른 파티원으로 교체)\n\n";
+         
+         msg += "⭐️ 공성전 이그열매 사용가능\n";
+         msg += "⭐️ 가능하신분은 디스코드 청취 부탁드립니다.\n";
+         msg += "(https://discord.gg/rCC9ZFbXpY)\n\n\n";
+         
+         msg += "2)🌈길드사냥 2 회\n\n";
+         msg += "*매주 금요일,토요일 19:30-23:30 분\n";                  
+         msg += "*하드1회+노멀1회 기준\n\n\n";
+         
+         msg += "3)🌈길드 피고목 도감 파티\n\n";
+                  msg += "*매주 일요일 19:30 ,모로크서부 1시\n";
+         msg += "*<피묻은 고목가지>2개 지참\n";
+         msg += "*인원이 많은만큼 진행자의 말에 잘 따라주시길 부탁드립니다.\n\n\n";
+		 msg += "@@@ 잠시 쉬어갑니다. 다시 돌아오겠습니다 @@@"
+         
+         msg += "4)🌈부캐 길드\n";
+         msg += "* 부캐 길드는 편의상 ‘클로버’ 추천으로 통일 하겠습니다. 양해 부탁드립니다.\n\n\n";
+         
+         msg += "5)🌈타인의 피고목을 치는행위는 자제해 주십시오.\n\n";      
+         
+         msg += "6)🌈사냥범위 체크로 겹사를 방지해주세요 !\n\n";
+         
+         msg += "7)🌈미접속 7 일 기준으로 관리합니다.\n";
+         msg += "(미리 알려줄시 연장가능)\n\n";
+         
+         msg += "*기타 문의사항은 인게임내 백설기,흑설기로 1:1 주시거나 오픈톡방 백설기 프로필을 누르시면 개인 채팅이 가능합니다 !\n\n";
+         msg += "";
+      return msg;
+   }else if(type == "B"){
+      var msg2 = "";
+      return msg2;   
+   }   
+}
+
+/**
+ * === 레인보우봇 명령어 ========================================
+ * 명령어 : /레인보우봇
+ */
+function rainbowBot() {   
+   var txt = "===== 🌈 가능한 명령어 🌈 ===== \n";
+      txt += "/공지 : 길드공지사항 \n\n";
+      txt += "/OOOO : 당신에게 적절한 응답을~ \n";
+      txt += "ex)/따꼬 \n\n";
+      txt += "/입력@보스명@남은시간(분) : 남은시간 계산하여 5분전에 알림~ \n";         
+      txt += "ex) /입력@도플.길드@120 \n";
+      txt += "ex) 보스명에 '월드' 또는 'MVP' 를 함께 입력하면 10분전에 알림~ \n\n";
+      txt += "/킬@보스명 : 다음 리젠시간 5분전에 알림~ \n";
+      txt += "ex) /보스킬@도플.월드 \n\n";
+      txt += "/보스 : 알림 등록된 보스/시간 확인 \n";
+      txt += "ex) /보스 \n\n";
+      txt += "";
+      txt += "";
+      txt += "🌈 제작 : 아찌리, 따꼬\n";
+      txt += "🌈 ver 1.1.4\n";  
+   return txt;
+}
+
+   /**
+ * === 응답메시지 ========================================
+ * 명령어 : /따꼬
+ */
+function guildMsg(nickName) {
+   var msgDeef = [
+         "뭐라고 대답해야 되죠?", 
+         "이상한 말씀 하지마세요!", 
+         "??????", 
+         "네? 다시 말해주세요", 
+         "......??!",
+         "따꼬봇은 만능이 아닙니다.. ㅠ",
+         "모르겠습니다;;",
+         "혼자만의 시간을 갖고 싶네요..",
+         "땡.. 잘 좀 해봐요..",
+         "뷀",
+         "(쑥스)", "(심각)", "(씨익)", "(깜짝)", "(힘듦)", "(정색)", "(흑흑)",
+         "(뽀뽀)", "(흥)", "(허걱)", "(굿)", "(멘붕)", "(헉)"
+      ];
+   var msg = msgDeef[Math.floor(Math.random() * msgDeef.length)];
+   
+   var today = new Date();
+   if(nickName == '/지금')         msg = "지금은 "+today.getHours()+"시 "+today.getMinutes()+"분 입니다.";
+   else if(nickName == '/오늘')      msg = "오늘은 "+today.getFullYear()+"년 "+(today.getMonth()+1)+"월 "+today.getDate()+"일 입니다.";
+   else if(nickName == '/야')      msg = "왜?!";
+   else if(nickName == '/너')      msg = "모?!";
+   else if(nickName == '/우씨')      msg = "메롱~";
+   else if(nickName == '/고마워')   msg = "(쑥스)";        
+   else if(nickName == '/사랑해')   msg = "(뽀뽀)";        
+   else if(nickName == '/따꼬'){
+      var txt = [
+         "따꼬가 젤 조아", 
+         "네~?", 
+         "(아잉)", 
+         "왜불러?", 
+         "응?",
+         "세젤예 멋쁨 대장님 사랑해요 ❤",
+         "똥...",
+         "바보멍충이"
+      ];
+      msg = txt[Math.floor(Math.random() * txt.length)];
+   }      
+      else if(nickName == "/레인보우")      msg = "백설기 충성충성";
+   else if(nickName == "/백설기")      msg = "세젤예 멋쁨 대장님 사랑해요 ❤";
+   else if(nickName == "/쿠이나")      msg = "쿠이형 세계 최고!";
+   else if(nickName == "/뿅뿅")         msg = "(소)고기사줄멋있는형";
+   else if(nickName == "/아찌리") msg = "따꼬봇의 아버지!!!!!11 정답을 알려줘!!!!1";
+   else if(nickName == "/김따블") msg = "포풍왕";
+   else if(nickName == "/CHIC" || nickName == "/chic" || nickName == "/칡") msg = "아박꼼(아수라 박고 꼼장어)";
+   else if(nickName == "/고양2" || nickName == "/고양이" || nickName == "/양이") {
+      var txt = [
+         "야옹야옹~",
+         "미야옹",
+         "야옹?",
+         "냥냥",
+         "meow~"
+      ];
+      msg = txt[Math.floor(Math.random() * txt.length)];
+   }
+   
+   return msg;
+}   
+
+/**
+ * === 도배금지 ========================================
+ */
+var jokeNum1 = 0;
+var jokeNum2 = 0;
+var beforFnTime = null;
+var beforFnSender = null;
+function chkFnTm(sender) {
+   var txt = [
+      "❤❤❤채팅창 도배는 삼가해주세요❤❤❤"
+      , "❤❤❤채팅창 도배는 삼가해주세요❤❤❤"
+      , "❤❤❤채팅창 도배는 삼가해주세요❤❤❤"
+      , "❤❤❤채팅창 도배는 삼가해주세요❤❤❤"
+   ];
+   
+   if(beforFnSender == null) beforFnSender = sender;
+   var nowFnSender = sender;
+   if( nowFnSender == beforFnSender )    jokeNum2++;
+   else    jokeNum2 = 0;
+   beforFnSender = sender;
+   
+   if(beforFnTime == null) beforFnTime = new Date();   
+   var nowFnTime = new Date();
+   var chk = nowFnTime.getTime() - beforFnTime.getTime();
+   if( (chk/1000) <= 10 )    jokeNum1++;
+   else    jokeNum1 = 0;
+   beforFnTime = new Date();
+   
+      if(jokeNum2 >= 8){
+      return "(짜증)";
+   }else if(jokeNum2 >= 5){
+      return nowFnSender+"님 저를 너무 찾으시는거 아닌가요?";
+   }else{
+      return "";
+   }
+   
+   if(jokeNum1 >= 8){
+      return "(짜증)";
+   }else if(jokeNum1 >= 5){
+      return txt[Math.floor(Math.random() * txt.length)];
+   }else{
+      return "";
+   }
+}
+
+/**
+ * === 보스 ========================================
+ * 명령어 : /입력@드라@120
+ * 명령어 : /킬@드라
+ * 명령어 : /전체삭제
+ * 명령어 : /삭제@드라
+ * 명령어 : /보스
+ */
+var mvpBoss = [];
+function mvpBossFn(msg) {   
+   var txt = msg.split("@");
+   if(msg.indexOf("/입력") != -1){      
+       if(txt.length == 3){
+         for(j=0; j<mvpBoss.length; j++){
+            var sub = mvpBoss[j];
+            if(sub.name == txt[1]){
+                  return "보스 ["+txt[1]+"] 는 이미 등록되어 있네요~";
+            }   
+         }
+          var setTime = new Date();
+            setTime.setMinutes(setTime.getMinutes() + Number(txt[2]));          
+          var list = {
+             name : txt[1]
+             , YY : setTime.getFullYear()
+             , MM : setTime.getMonth()+1
+             , DD : setTime.getDate()
+             , HH : setTime.getHours()
+             , SS : setTime.getMinutes()
+          };
+          mvpBoss.push(list);
+         return "보스 ["+txt[1]+"] \n알림시간 : "+setTime.getHours()+"시 "+setTime.getMinutes()+"분 등록!";
+      }else{
+           return "뭐 한개 빠진것 같지 않나용? +_+ \n 입력방법 => /입력@보스명@남은시간(분)";
+        }
+   }else if(msg.indexOf("/킬") != -1){
+       if(txt.length == 2){
+         for(j=0; j<mvpBoss.length; j++){
+            var sub = mvpBoss[j];
+            if(sub.name == txt[1]){
+               return "보스 ["+txt[1]+"] 는 이미 등록되어 있네요~";
+            }   
+         }
+          var setTime = new Date();
+            setTime.setMinutes(setTime.getMinutes() + 120);          
+          var list = {
+             name : txt[1]
+             , YY : setTime.getFullYear()
+             , MM : setTime.getMonth()+1
+             , DD : setTime.getDate()
+             , HH : setTime.getHours()
+             , SS : setTime.getMinutes()
+          };
+          mvpBoss.push(list);
+         return "보스 ["+txt[1]+"] \n알림시간 : "+setTime.getHours()+"시 "+setTime.getMinutes()+"분 등록!";
+      }else{
+           return "뭐 한개 빠진것 같지 않나용? +_+ \n 입력방법 => /킬@보스명";
+        }
+   }else if(msg.indexOf("/전체삭제") != -1){
+      mvpBoss = [];
+         return "전체삭제완료";
+   }else if(msg.indexOf("/삭제") != -1){
+      if(txt.length == 2){
+         for(j=0; j<mvpBoss.length; j++){
+            var sub = mvpBoss[j];
+            if(sub.name == txt[1]){
+               mvpBoss.splice(j, 1);
+               return "보스 ["+txt[1]+"] 는 삭제되었습니다.";
+            }   
+         }
+      }else{
+           return "뭐 한개 빠진것 같지 않나용? +_+ \n 입력방법 => /삭제@보스명";
+        }
+   }else if(msg.indexOf("/보스") != -1){
+         if(mvpBoss.length <= 0){
+            return "설정된 보스 타임이 없네요..";
+         }else{
+            if(mvpBoss.length >= 1) {
+             var conts = "==================\n";
+             for(j=0; j<mvpBoss.length; j++){
+                var sub = mvpBoss[j];
+                conts += "보스 : ["+sub.name+"] \n리젠시간 : "+sub.HH+"시 "+sub.SS+"분\n";
+               conts += "==================\n";
+            }
+             return conts;
+         }
+      }      
+   }
+   return "잘못입력하신거 같아요..";   
+}
+   /**
+ * === 보스알림 ========================================
+ */
+function setMvpNotice(){   
+   if(mvpBoss.length >= 1){
+      for(j=0; j<mvpBoss.length; j++){
+         var sub = mvpBoss[j];
+         var nowTime = new Date();
+         var setTime = new Date(sub.YY, sub.MM-1, sub.DD, sub.HH, sub.SS, 0);
+         var chk = setTime.getTime() - nowTime.getTime();
+         chk = chk/1000/60; 
+            if(chk <= 6){
+            var conts = "똑똑! 알려드립니다~\n";
+               conts += "====== 보스타임 ======\n";
+               conts += "리젠시간 " + parseInt(chk) + "분전 입니다. \n준비하세요~\n\n";
+               conts += "["+sub.name+"] \n리젠시간 : "+sub.HH+"시 "+sub.SS+"분\n";
+            mvpBoss.splice(j, 1);
+            return conts;
+         }else if(chk <= 11 && (sub.name.indexOf("월드") != -1 || sub.name.indexOf("MVP") != -1)){
+            var conts = "똑똑! 알려드립니다~\n";
+               conts += "====== 보스타임 ======\n";
+               conts += "리젠시간 " + parseInt(chk) + "분전 입니다. \n준비하세요~\n\n";
+               conts += "["+sub.name+"] \n리젠시간 : "+sub.HH+"시 "+sub.SS+"분\n";
+            mvpBoss.splice(j, 1);   
+            return conts;
+         }   
+      }
+   }
+   return "";
+}
+   /**
+ * === 이벤트 & 일정 알림 ========================================
+ */
+var week = new Array('일', '월', '화', '수', '목', '금', '토');
+var CalendarList1 = [
+   {name: "길드매칭전",       start: "Y", AA: 30, BB: "일정", LL: "수",    HH: 20, SS: 30, contents: "참석인원은 20분까지는 접속을 꼭 부탁드립니다.\n 9시 시작이며, 50분까지 참가신청을 해야합니다."}
+   ,{name: "길드사냥",       start: "Y", AA: 10, BB: "일정", LL: "금",    HH: 19, SS: 30, contents: "하드 1번, 노말 1번 씩 부탁드립니다."}
+   ,{name: "길드사냥",       start: "Y", AA: 10, BB: "일정", LL: "토",    HH: 19, SS: 30, contents: "하드 1번, 노말 1번 씩 부탁드립니다."}
+
+   ,{name: "공성전",          start: "Y", AA: 30, BB: "일정", LL: "일",    HH: 20, SS: 50, contents: "30분까지는 접속을 꼭 부탁드립니다.\n디스코드 주소 : https://discord.gg/rCC9ZFbXpY \n가능하면 접속해주세요."}
+   ,{name: "무도회",          start: "Y", AA: 5, BB: "일정", LL: "일",    HH: 20, SS: 00, contents: "무도회가 5분 뒤 시작됩니다!"}
+];
+      /*,{name: "피고목 도감",       start: "Y", AA: 10, BB: "일정", LL: "일",    HH: 19, SS: 30, contents: "피고목 2개지참~ \n(일반)고목 사용금지!\n순서 지켜주세요~"}*/
+function setCalendarNotice1(){   
+   if(CalendarList1.length >= 1){
+      for(j=0; j<CalendarList1.length; j++){
+         var sub = CalendarList1[j];
+         var nowTime = new Date();
+         var setTime = new Date(nowTime.getFullYear(), nowTime.getMonth(), nowTime.getDate(), sub.HH, sub.SS, 0);
+         var today = nowTime.getDay();
+         var chk = setTime.getTime() - nowTime.getTime();
+         chk = chk/1000/60;          
+         if(sub.start == "Y" && sub.BB == "일정" 
+            && week[today] == sub.LL
+            && Math.sign(chk) == -1){
+            CalendarList1[j].start = "Y";
+            if(CalendarList1[j].name == "길드매칭전") guildPvpList = [];
+            return "";
+         }   
+      }
+   }
+   return "";
+}
+   /**
+ * === 반복 알림 ========================================
+ * 명령어 : /반복시작@공성전
+ * 명령어 : /반복종료@공성전
+ */
+ 
+var CalendarList2 = [
+      {name: "공성전",       start: "N", AA: 1, BB: "반복", LL: "일",    HH: 20, SS: 50, contents: "** 🌈이번주 일요일 공성전이 있습니다🌈\n** <Rainbow공지방>에서 참가여부를 투표해주세요!\n   공지방 링크는 상단의 공지를 확인해주세요.\n   용사님들의 힘이 필요합니다 !!"}
+   ,{name: "길드매칭전",    start: "N", AA: 3, BB: "반복", LL: "수",    HH: 20, SS: 30, contents: "길드매칭전이 있습니다.🌈\n 참가 명령어로 신청 부탁드립니다.\n ex) /신청@기사 or /신청@기사@후보"}
+];
+function setCalendarNotice2(){   
+   if(CalendarList2.length >= 1){
+      for(j=0; j<CalendarList2.length; j++){
+         var sub = CalendarList2[j];
+         var nowTime = new Date();
+         var setTime = new Date(nowTime.getFullYear(), nowTime.getMonth(), nowTime.getDate(), sub.HH, sub.SS, 0);
+         var today = nowTime.getDay();
+         var chk = setTime.getTime() - nowTime.getTime();
+         chk = chk/1000/60;          
+         if(sub.start == "Y" && sub.BB == "반복" 
+            && week[today] == sub.LL
+            && Math.sign(chk) == -1){
+            CalendarList2[j].start = "N";                        
+            return "";
+         }else if(sub.start == "Y" && sub.BB == "반복"
+            && nowTime.getHours() < 23 && nowTime.getHours() > 9
+            && nowTime.getMinutes() < (sub.AA + 1) && nowTime.getMinutes() > (sub.AA - 1)){            
+            var conts = "똑똑! 알려드립니다~\n";
+               conts += "==== "+sub.name+" ====\n";
+               conts += sub.contents;
+            return conts;
+         }   
+      }
+   }
+   return "";
+}function scheduleStart(msg){
+   var txt = msg.split("@");   
+   if(txt.length == 2){
+      if(msg.indexOf("/반복시작") != -1){   
+         for(j=0; j<CalendarList2.length; j++){
+            var sub = CalendarList2[j];
+            if(sub.BB == "반복" && sub.name.indexOf(txt[1]) != -1 && txt[1].length > 0){
+               CalendarList2[j].start = "Y";
+               return sub.name+" : 반복알림이 시작되었습니다.";
+            }
+            }
+      }else if(msg.indexOf("/반복종료") != -1){   
+         for(j=0; j<CalendarList2.length; j++){
+            var sub = CalendarList2[j];
+            if(sub.BB == "반복" && sub.name.indexOf(txt[1]) != -1 && txt[1].length > 0){
+               CalendarList2[j].start = "N";
+               return sub.name+" : 반복알림이 종료되었습니다.";
+            }
+         }   
+      }
+      var texts = "잘못입력하신거 같아요.. \n 등록된 이벤트는 ";
+      for(j=0; j<CalendarList2.length; j++){
+         var sub = CalendarList2[j];
+         if(j==0)
+            texts += "'" + sub.name + "'";
+         else
+            texts += ", '" + sub.name + "'";
+      }   
+         texts += " 입니다.";
+      return texts;
+   }else{
+      return "뭐 한개 빠진것 같지 않나용? +_+ \n 입력방법 => /반복시작(종료)@이벤트명";
+   }
+}
+var pvpguild ="";
+function guildPvpmatch(msg){
+   var txt = msg.split("@");
+   if(msg.indexOf("/길매상대") != -1){
+      if (txt.length == 2){
+    pvpguild = txt[1];
+       CalendarList2[1].contents = "오늘 길드 매칭전 상대는 <"+pvpguild+'>입니다 \n명령어로 신청 부탁드립니다.\n ex) /신청@기사 or /신청@기사@후보';  
+         return {
+            pvpguild: pvpguild,
+            text: "길드매칭전 상대가 등록되었습니다. ["+pvpguild+"]"
+         };
+      }
+      else{
+         return {
+            pvpguild: "",
+            text: "뭐 한개 빠진것 같지 않나용? +_+ \n 입력방법 => /길매상대@레인뽀우"
+         };
+      }
+   }
+   return {
+      pvpguild: "",
+      text: "잘못입력하신거 같아요.."
+   };
+}   
+ 
+
+/**
+ * === 길드매칭전 ========================================
+ * 명령어 : /신청@기사@후보    (그룹 : 기사,궁수,프리,도적,상인,법사)
+ * 명령어 : /신청취소
+ * 명령어 : /신청조회
+ */
+   var guildPvpList = [];
+function guildPvpFn(msg, sender) {   
+   if(msg.indexOf("/신청취소") != -1){
+      for(j=0; j<guildPvpList.length; j++){
+         var sub = guildPvpList[j];
+         if(sender == sub.name){
+            guildPvpList.splice(j, 1);
+            return sender + " 님 신청이 취소되었습니다.";
+         }   
+      }   return sender + " 님의 신청내역이 없습니다.";
+   }else if(msg.indexOf("/신청조회") != -1){
+      guildPvpList.sort(function(a, b) { // 오름차순
+         return a.clas < b.clas ? -1 : a.clas > b.clas ? 1 : 0;
+      });   
+      var prev = "";
+      var texts = "오늘 길드 매칭전 상대는 <"+pvpguild+'>입니다 \n명령어로 신청 부탁드립니다.\n ex) /신청@기사 or /신청@기사@후보';
+      texts += "\n==== 신청 현황 ==== \n\n";
+      for(j=0; j<guildPvpList.length; j++){
+         if(j==0){
+            prev = guildPvpList[j].clas;
+            texts += "< " + guildPvpList[j].clas + " >\n";
+            texts += " - " + guildPvpList[j].name;
+            if (guildPvpList[j].conts != "")
+               texts += " (" + guildPvpList[j].conts + ")\n";
+            else   
+               texts += " \n";
+         }else{
+            if(prev == guildPvpList[j].clas){
+               texts += " - " + guildPvpList[j].name;
+               if (guildPvpList[j].conts != "")
+                  texts += " (" + guildPvpList[j].conts + ")\n";
+               else   
+                  texts += " \n";
+            }else{
+               prev = guildPvpList[j].clas;
+               texts += "\n\n< " + guildPvpList[j].clas + " >\n";
+               texts += " - " + guildPvpList[j].name;
+               if (guildPvpList[j].conts != "")
+                  texts += " (" + guildPvpList[j].conts + ")\n";
+               else   
+                  texts += " \n";
+            }
+         }   
+         texts += "";
+      }
+      return texts;   }else if(msg.indexOf("/신청") != -1){   
+      var txt = msg.split("@");   
+      for(j=0; j<guildPvpList.length; j++){
+            if(guildPvpList[j].name == sender)
+            return sender + " 님은 이미 신청하셨네요~";
+      }   
+      var list = null;
+      if(txt.length == 3){
+         list = { name : sender, clas : txt[1], conts : txt[2]};         
+      }else if(txt.length == 2){
+         list = { name : sender, clas : txt[1], conts : ""};
+      }else{
+         return "뭐 한개 빠진것 같지 않나용? +_+ \n 입력방법 => /신청@직업@기타 \n (직업 : 기사,궁수,프리,도적,상인,법사)";
+      }      
+      guildPvpList.push(list);
+      return sender + " 님 신청완료! 응원합니다.";
+   }else{
+      var texts = "잘못입력하신거 같아요..";
+      return texts;
+   }   
+}
+
+      /**
+ * === 공성전 ========================================
+ * 명령어 : /공성전신청@기사@따꼬(딜or탱)   (그룹 : 기사,궁수,프리,도적,상인,법사)
+ * 명령어 : /공성전삭제@따꼬
+ * 명령어 : /공성전현황
+ */
+function guildCastleFn(msg) {
+   
+}      
+
+/**
+ * === 패치노트 =======================================
+ * 명령어 : /패치노트
+ */
+function patchNote(){
+   var txt = "🌈 [따꼬봇v1.1.4] 패치노트 (2022.11.02)\n";
+   txt += " 1. 피고목 도감파티가 당분간 중지됩니다. 관련 알림이 꺼졌습니다.";
+   txt += " 2. 무지개 잘 나오나염 ?";
+   txt += "";
+   txt += "";
+   txt += "";
+   txt += "";
+   txt += "";
+   txt += "";
+   txt += "";
+    txt += "";
+   txt += "\n🌈 따꼬봇은 Rainbow 구성원 모두가 좀더 편하고 재밌는 게임을 지향합니다.\n";
+   txt += "🌈 따꼬봇을 더욱 똑똑하게 만들 다양한 의견 기다립니다. 감사합니다.\n";
+   txt += "🌈 made by 아찌리, 따꼬 🌈";
+   
+   return txt;
+}
