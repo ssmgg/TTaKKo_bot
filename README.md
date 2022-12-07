@@ -18,6 +18,7 @@
 
 ## 보스알림
 보스를 등록하고, 등록된 보스를 확인하고, 리젠 시간 전 알림을 해줍니다.
+
 <img src="/img/보스알림1.jpg" width=45% height=45%>
 <img src="/img/보스알림2.jpg" width=45% height=45%>
 <img src="/img/보스알림3.jpg" width=45% height=45%>
